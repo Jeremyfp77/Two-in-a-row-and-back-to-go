@@ -1,0 +1,53 @@
+# Define the bet sequence
+bet_sequence = [1, 1, 1, 2, 2, 4, 4, 8, 8, 16, 16, 32, 32, 64, 64, 128, 128, 256, 256]
+
+# Prompt for the initial base bet
+base_bet = int(input("Enter your starting bet: "))
+
+def next_bet(outcome_history, last_bet):
+    consecutive_wins = 0
+    index = 0  # Start at the beginning of the sequence
+
+    # Check for consecutive wins
+    for outcome in reversed(outcome_history):
+        if outcome == 'W':
+            consecutive_wins += 1
+            if consecutive_wins == 2:
+                return base_bet  # If we have two consecutive wins, reset to base bet
+        else:
+            break  # If we hit a 'L', break the loop
+
+    # If the last bet was a win, double the bet
+    if outcome_history[-1] == 'W':
+        return last_bet * 2
+
+    # Move through the sequence based on losses
+    for outcome in outcome_history:
+        if outcome == 'L':
+            index += 1  # Move to the next number in the sequence after a loss
+
+    # Calculate the next bet
+    return base_bet * bet_sequence[min(index, len(bet_sequence) - 1)]
+
+# Initialize an empty list to keep track of outcomes
+outcome_history = []
+
+# Initialize the last bet
+last_bet = base_bet
+
+while True:
+    # Ask the user for the outcome of the last round
+    last_outcome = input("Enter the outcome of the last hand (W for win, L for lose, Q to quit): ").upper()
+    
+    # If the user wants to quit, break out of the loop
+    if last_outcome == 'Q':
+        print("Quitting the program.")
+        break
+
+    # Append the outcome to the history
+    outcome_history.append(last_outcome)
+
+    # Calculate and display the next bet
+    last_bet = next_bet(outcome_history, last_bet)
+    print(f"Next bet should be: ${last_bet}")
+
